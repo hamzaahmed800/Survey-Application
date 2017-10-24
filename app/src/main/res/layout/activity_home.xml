@@ -35,8 +35,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
                 android:gravity="center"
-                android:textAlignment="center"
                 android:text="Image"
+                android:textAlignment="center"
                 android:textColor="#000"
                 android:textSize="18sp" />
 
@@ -45,7 +45,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="3dp"
-                android:src="@android:drawable/ic_menu_gallery"/>
+                android:src="@android:drawable/ic_menu_gallery" />
 
         </LinearLayout>
 
@@ -61,8 +61,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:gravity="center"
                 android:drawableTop="@android:drawable/ic_menu_mylocation"
+                android:gravity="center"
                 android:text="Location"
                 android:textColor="#000" />
 
@@ -70,10 +70,10 @@
                 android:id="@+id/location"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:textAlignment="center"
-                android:gravity="center"
                 android:layout_gravity="center"
-                android:layout_marginTop="3dp"/>
+                android:layout_marginTop="3dp"
+                android:gravity="center"
+                android:textAlignment="center" />
 
         </LinearLayout>
 
@@ -82,7 +82,7 @@
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="5dp"
             android:layout_marginTop="30dp"
             android:gravity="center"
             android:text="BaseLine Survey For Recruitment " />
@@ -94,9 +94,20 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="10dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:text=" SUBMIT " />
+
+        <Button
+            android:id="@+id/done_info"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text=" Done " />
+
 
 
     </LinearLayout>
