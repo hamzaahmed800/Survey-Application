@@ -82,6 +82,7 @@ public class Personal_Info_Fragment extends Fragment implements View.OnClickList
         dob = (EditText) view.findViewById(R.id.date_of_birth);
         dob.addTextChangedListener(new MaskTextWatcher(dob, new SimpleMaskFormatter("NN-NN-NNNN")));
         cnic_no = (EditText) view.findViewById(R.id.cnic_text);
+        cnic_no.addTextChangedListener(new MaskTextWatcher(cnic_no, new SimpleMaskFormatter("NNNNN-NNNNNNN-N")));
         cnin_p = (EditText) view.findViewById(R.id.cnic_place_text);
         cnin_ex = (EditText) view.findViewById(R.id.cnic_expiry);
         cnin_ex.addTextChangedListener(new MaskTextWatcher(cnin_ex, new SimpleMaskFormatter("NN-NN-NNNN")));
@@ -244,7 +245,7 @@ public class Personal_Info_Fragment extends Fragment implements View.OnClickList
 
                 } else {
 
-                    Toast.makeText(getContext(), "Name, father name, age, date of birth , CNIC Data, religon  required!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Name, father name, age, date of birth , CNIC Data, required!", Toast.LENGTH_LONG).show();
                 }
 
                 break;
@@ -254,12 +255,15 @@ public class Personal_Info_Fragment extends Fragment implements View.OnClickList
     private void done_personal_info() {
 
         storeData();
+        HomeActivity.exit = true;
         Intent intent = new Intent(getActivity(), HomeActivity.class);
         startActivity(intent);
+
 
     }
 
 
+    //saving data in SharedPrefrences
     public void storeData() {
 
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());

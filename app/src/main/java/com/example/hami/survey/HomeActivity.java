@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.location.Criteria;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
@@ -18,7 +19,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +46,7 @@ import retrofit2.Retrofit;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Button p_button, submit;
+    Button p_button, submit,done;
     SharedPreferences preferences;
     ProgressDialog mDiloge;
     TextView location;
@@ -55,9 +55,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private double latitude;
     private LocationManager locationManager;
     private String provider;
-
+   // public  ArrayList<Signup_Model> arrayList;
+    public static Boolean exit = false;
     ImageView image;
     private Bitmap bitmap = null;
+
 
 
     @Override
@@ -67,6 +69,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         initView();
+
     }
 
     //Initializing view
@@ -81,6 +84,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         p_button.setOnClickListener(this);
         submit = (Button) findViewById(R.id.submit_info);
         submit.setOnClickListener(this);
+        done = (Button) findViewById(R.id.done_info);
+        done.setOnClickListener(this);
+
+
 
         image = (ImageView) findViewById(R.id.image);
         image.setOnClickListener(new View.OnClickListener() {
@@ -100,10 +107,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                 provider = locationManager.getBestProvider(new Criteria(), false);
 
-                if (    ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                if (ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                         && ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(HomeActivity.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},0);
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
                 } else {
 
                     // construct a new instance of SimpleLocation
@@ -119,11 +126,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     latitude = SLocation.getLatitude();
                     longitude = SLocation.getLongitude();
                     //Location SLocation = locationManager.getLastKnownLocation(provider);
-                    setLocation(longitude,latitude);
+                    setLocation(longitude, latitude);
                 }
 
             }
         });
+
+
+
     }
 
 
@@ -146,14 +156,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         editor.apply();
     }
 
-    public String getStringImage(Bitmap bmp){
+    public String getStringImage(Bitmap bmp) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp = Bitmap.createScaledBitmap(bmp, 150,150, false);
+        bmp = Bitmap.createScaledBitmap(bmp, 150, 150, false);
 
         bmp.compress(Bitmap.CompressFormat.JPEG, 70, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-        Log.d("aaa", encodedImage);
+      //  Log.d("aaa", encodedImage);
         return encodedImage;
     }
 
@@ -184,7 +194,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         SLocation.beginUpdates();
                         latitude = SLocation.getLatitude();
                         longitude = SLocation.getLongitude();
-                        setLocation(longitude,latitude);
+                        setLocation(longitude, latitude);
                     }
                 } else {
                 }
@@ -195,10 +205,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setLocation(double longi, double latit) {
 
-        location.setText("Longitude : "+longi+" , Latitude : "+latit);
+        location.setText("Longitude : " + longi + " , Latitude : " + latit);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(CommonCalls.longitude, longitude+"");
-        editor.putString(CommonCalls.latitude, latitude+"");
+        editor.putString(CommonCalls.longitude, longitude + "");
+        editor.putString(CommonCalls.latitude, latitude + "");
 
         editor.apply();
     }
@@ -218,9 +228,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.submit_info:
 
+
                 //Data insertion
                 if (CommonCalls.isInternetAvailable(getApplicationContext())) {
-                    if (SharedPrefrenceManager.getInstance(this).admin_Name() != null  ) {
+                    if (SharedPrefrenceManager.getInstance(this).admin_Name() != null) {
                         mDiloge = new ProgressDialog(this);
                         mDiloge.setTitle("Data Upload");
                         mDiloge.setMessage("please wait..");
@@ -231,21 +242,50 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                     }
                 } else {
-                    Toast.makeText(HomeActivity.this, "Network error!", Toast.LENGTH_LONG).show();
 
+                    SharedPrefrenceManager.objectList.add(setUserDetail());
+                   // arrayList.add(setUserDetail());
+                 //   SharedPrefrenceManager.getInstance(this).saveDataListToSharedpreference(arrayList);
+                    Toast.makeText(HomeActivity.this, "Data Saved!", Toast.LENGTH_SHORT).show();
                 }
                 break;
 
+            case R.id.done_info:
+
+              //  Toast.makeText(HomeActivity.this,String.valueOf(SharedPrefrenceManager.objectList.size()),Toast.LENGTH_LONG).show();
+                SharedPrefrenceManager.getInstance(this).saveDataListToSharedpreference(SharedPrefrenceManager.objectList);
+                Toast.makeText(HomeActivity.this, "Survey Complete", Toast.LENGTH_SHORT).show();
+                break;
         }
 
 
     }
 
-
 //    @Override
-//    public void onBackPressed() {
-//        System.exit(0);
-//    }
+//    protected void onPause() {
+//        super.onPause();
+//
+//   }
+
+
+    @Override
+    public void onBackPressed() {
+        if (exit) {
+            finish(); // finish activity
+        } else {
+            Toast.makeText(this, "Press Back again to Exit.",
+                    Toast.LENGTH_SHORT).show();
+            exit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    exit = false;
+                }
+            }, 2 * 1000);
+
+        }
+
+    }
 
     //INSERT user details in Database
     private void insertUserDetails() {
@@ -271,8 +311,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 preferences.getString(CommonCalls.martial_Status, null),
                 preferences.getString(CommonCalls.emp_status, null),
                 preferences.getString(CommonCalls.emp_will, null),
-                preferences.getInt(CommonCalls.no_male_child, 0)+"",
-                preferences.getInt(CommonCalls.no_female_child, 0)+"",
+                preferences.getInt(CommonCalls.no_male_child, 0) + "",
+                preferences.getInt(CommonCalls.no_female_child, 0) + "",
                 preferences.getString(CommonCalls.availabilit, null),
                 preferences.getString(CommonCalls.remarks, null),
                 preferences.getString(CommonCalls.longitude, null),
@@ -289,7 +329,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     if (signup_response_model.getSuccess() == 1) {
                         mDiloge.dismiss();
                         Toast.makeText(HomeActivity.this, "Data Added", Toast.LENGTH_LONG).show();
-                    }else {
+                    } else {
                         mDiloge.dismiss();
                         Toast.makeText(HomeActivity.this, "First Insert Data!", Toast.LENGTH_LONG).show();
                     }
@@ -340,6 +380,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    //setting up the user model
     private Signup_Model setUserDetail() {
 
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -348,7 +389,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         sign_up_model.setAdminName(SharedPrefrenceManager.getInstance(this).admin_Name());
         sign_up_model.setName(preferences.getString(CommonCalls.name, null));
         sign_up_model.setFatherName(preferences.getString(CommonCalls.fname, null));
-        sign_up_model.setAge(preferences.getString(CommonCalls.age, null));//for age
+        sign_up_model.setAge(null); //for age
         sign_up_model.setDob(preferences.getString(CommonCalls.dob, null));
         sign_up_model.setCnic(preferences.getString(CommonCalls.cnic_no, null));
         sign_up_model.setPlaceOfIssuence(preferences.getString(CommonCalls.cnic_place, null));
@@ -364,6 +405,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         sign_up_model.setWillingForEmp(preferences.getString(CommonCalls.emp_will, null));
         sign_up_model.setAvailabilty(preferences.getString(CommonCalls.availabilit, null));
         sign_up_model.setRemarks(preferences.getString(CommonCalls.remarks, null));
+        sign_up_model.setLatitude(preferences.getString(CommonCalls.longitude, null));
+        sign_up_model.setLongitude(preferences.getString(CommonCalls.longitude, null));
+        sign_up_model.setImage(preferences.getString(CommonCalls.image, null));
+
 
         return sign_up_model;
     }
@@ -384,4 +429,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         return true;
     }
+
+
+
 }
